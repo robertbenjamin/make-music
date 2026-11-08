@@ -1,0 +1,1058 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The CAM System</title>
+<meta name="description" content="A follow-along guide to Luca Bade's CAM System (Create, Arrange, Mix) for finishing music: each phase's goal, mindset, what to avoid and when to move on.">
+<meta property="og:title" content="The CAM System">
+<meta property="og:description" content="A follow-along guide to Luca Bade's CAM System (Create, Arrange, Mix) for finishing music: each phase's goal, mindset, what to avoid and when to move on.">
+<meta property="og:url" content="https://make-music.robertbenjamin.co/">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#f4f5f7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#141518" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<style>
+  /* base reset (matches the environment the page was designed in) */
+  :root { color-scheme: light; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+  body { margin: 0; }
+  img { max-width: 100%; }
+  [hidden] { display: none !important; }
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shantell+Sans:wght@400;600;700&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: his whiteboard as the map (3 coloured stages × 2 phases + a green checkpoint).
+   Overview = one calm card per phase. Focus mode = one phase per screen, with a stage/phase nav on top and prev/next below. */
+:root {
+  --bg: #f4f5f7; --surface: #ffffff; --sunk: #eef0f3; --fg: #17181c; --muted: #5b5f6c; --line: #dfe1e7;
+  --create: #a87d00; --create-soft: #fbf3d6;
+  --arrange: #2c63cf; --arrange-soft: #e3ecfc;
+  --mix: #c8344a; --mix-soft: #fbe4e8;
+  --check: #23854a; --check-soft: #e3f4e9;
+  --focus: #2c63cf; --board: #ffffff; --board-edge: #dfe1e7;
+  --shadow: 0 1px 2px rgba(23,24,28,.04), 0 6px 20px rgba(23,24,28,.05);
+  --font-hand: "Shantell Sans", "Comic Neue", "Segoe Print", system-ui, sans-serif;
+  --font-body: "Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --step--1: 0.84rem; --step-0: 1rem; --step-1: 1.2rem; --step-2: 1.55rem;
+  --step-3: clamp(2rem, 5vw, 2.9rem);
+}
+/* Dark: his whiteboard. Charcoal ground, chalky text, the board's own marker colours. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #141518; --surface: #1d1f23; --sunk: #25272c; --fg: #e8e8ea; --muted: #9a9eaa; --line: #31343b;
+    --create: #ecc94b; --create-soft: #2d2818; --arrange: #7fa8ff; --arrange-soft: #19233a;
+    --mix: #ff7385; --mix-soft: #3a1c23; --check: #62d692; --check-soft: #15291d; --focus: #7fa8ff;
+    --board: #222326; --board-edge: #2f3237;
+    --shadow: 0 1px 0 rgba(255,255,255,.03) inset, 0 10px 30px rgba(0,0,0,.35);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #141518; --surface: #1d1f23; --sunk: #25272c; --fg: #e8e8ea; --muted: #9a9eaa; --line: #31343b;
+  --create: #ecc94b; --create-soft: #2d2818; --arrange: #7fa8ff; --arrange-soft: #19233a;
+  --mix: #ff7385; --mix-soft: #3a1c23; --check: #62d692; --check-soft: #15291d; --focus: #7fa8ff;
+  --board: #222326; --board-edge: #2f3237;
+  --shadow: 0 1px 0 rgba(255,255,255,.03) inset, 0 10px 30px rgba(0,0,0,.35);
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 88px; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before { transition: none !important; animation: none !important; } }
+body {
+  background: var(--bg); color: var(--fg);
+  font-family: var(--font-body); font-size: var(--step-0); line-height: 1.55;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0 64px;
+}
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg); }
+body.focusing { overflow: hidden; }
+.wrap { max-width: 980px; margin: 0 auto; }
+a { color: inherit; }
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; border-radius: 4px; }
+h1, h2, h3, h4 { text-wrap: balance; margin: 0; }
+p { margin: 0; }
+.eyebrow { font-family: var(--font-mono); font-size: var(--step--1); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+button, input, select { font: inherit; color: inherit; }
+button { cursor: pointer; }
+kbd { font-family: var(--font-mono); font-size: .72rem; line-height: 1; padding: 3px 5px; border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 5px; background: var(--surface); color: var(--muted); }
+.btn { display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--line); background: var(--surface); border-radius: 8px; padding: 7px 12px; font-size: var(--step--1); text-decoration: none; }
+.btn:hover { border-color: var(--muted); }
+.btn.primary { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+.btn.primary kbd { background: transparent; color: inherit; border-color: color-mix(in srgb, var(--bg) 45%, transparent); }
+.btn.ghost { background: transparent; }
+.btn[aria-pressed="true"] { border-color: var(--check); color: var(--check); }
+
+/* ---------- header ---------- */
+header.top { display: grid; gap: 14px; padding-block: 36px 20px; }
+.toprow { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+header.top h1 { font-family: var(--font-hand); font-weight: 700; font-size: var(--step-3); line-height: 1.1; }
+.c-c { color: var(--create); } .c-a { color: var(--arrange); } .c-m { color: var(--mix); }
+.lede { font-size: var(--step-1); max-width: 60ch; }
+.controls { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 4px; }
+.controls input { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 7px 10px; width: 15rem; max-width: 100%; min-width: 0; }
+.confirm { display: inline-flex; gap: 8px; align-items: center; font-size: var(--step--1); color: var(--muted); }
+.theme { display: inline-flex; gap: 2px; padding: 3px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+.theme button { border: 0; background: transparent; border-radius: 7px; padding: 4px 11px; font-size: var(--step--1); color: var(--muted); }
+.theme button:hover { color: var(--fg); }
+.theme button[aria-pressed="true"] { background: var(--sunk); color: var(--fg); font-weight: 700; }
+
+/* ---------- sticky now bar ---------- */
+.now {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5;
+  margin-left: calc(-1 * max(16px, env(safe-area-inset-left, 0px)));
+  margin-right: calc(-1 * max(16px, env(safe-area-inset-right, 0px)));
+  padding: 10px max(16px, env(safe-area-inset-right, 0px)) 10px max(16px, env(safe-area-inset-left, 0px));
+  background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--line);
+}
+.now .wrap { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+.now .dot { width: 12px; height: 12px; border-radius: 50%; flex: none; background: var(--c, var(--muted)); }
+.now .txt { min-width: 0; flex: 1 1 260px; display: grid; }
+.now .where { font-family: var(--font-mono); font-size: .74rem; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); }
+.now .mind { font-family: var(--font-hand); font-weight: 600; }
+.now .acts { display: flex; gap: 8px; flex-wrap: wrap; }
+
+/* ---------- board ---------- */
+.board { --halo: var(--board); margin-top: 26px; background: var(--board); border: 1px solid var(--board-edge); border-radius: 14px; padding: 22px 18px 16px; box-shadow: var(--shadow); }
+.board h2 { font-family: var(--font-hand); font-weight: 600; font-size: var(--step-1); text-align: center; letter-spacing: .14em; text-transform: uppercase; margin-bottom: 16px; }
+.cols { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.col { display: grid; gap: 6px; align-content: start; padding: 0 12px 6px; border-left: 1.5px dashed var(--line); }
+.col:first-child { border-left: 0; }
+.col .bar { font-family: var(--font-hand); font-weight: 600; text-align: center; letter-spacing: .12em; padding: 6px; border: 2px solid var(--c); color: var(--c); border-radius: 4px; margin-bottom: 6px; }
+.node { display: flex; align-items: center; gap: 10px; text-align: left; width: 100%; background: transparent; border: 1px solid transparent; border-radius: 8px; padding: 7px 8px; font-family: var(--font-hand); font-size: 1.05rem; }
+.node:hover { background: var(--sunk); }
+.node .box { width: 28px; height: 28px; flex: none; display: grid; place-items: center; border: 2px solid color-mix(in srgb, var(--fg) 85%, transparent); border-radius: 5px; font-size: .9rem; font-weight: 600; }
+.node.gate { color: var(--check); } .node.gate .box { border-color: var(--check); }
+.node.done .box { background: var(--c); border-color: var(--c); color: var(--board); }
+.node.gate.done .box { background: var(--check); border-color: var(--check); }
+.node.current { border-color: var(--c); background: color-mix(in srgb, var(--c) 10%, transparent); }
+.node.gate.current { border-color: var(--check); background: var(--check-soft); }
+.strip { margin-top: 16px; overflow-x: auto; }
+.strip svg { display: block; width: 100%; min-width: 460px; height: auto; }
+.boardfoot { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin-top: 8px; font-size: var(--step--1); color: var(--muted); }
+
+/* ---------- principles ---------- */
+.principles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px 32px; margin-top: 34px; }
+.principles div { min-width: 0; }
+.principles h3 { font-family: var(--font-hand); font-weight: 600; font-size: var(--step-1); margin-bottom: 4px; }
+.principles p { color: var(--muted); }
+
+/* ---------- stages (overview) ---------- */
+.stage { margin-top: 64px; display: grid; gap: 18px; }
+.stagehead { display: grid; gap: 12px; border-top: 3px solid var(--c); padding-top: 14px; }
+.stagehead h2 { font-family: var(--font-hand); font-weight: 700; font-size: var(--step-2); color: var(--c); letter-spacing: .04em; }
+.intro { display: grid; gap: 12px; max-width: 70ch; }
+.intro ul { margin: 0; padding-left: 1.2em; }
+.strike { text-decoration: line-through; text-decoration-color: var(--mix); text-decoration-thickness: 2px; color: var(--muted); }
+.note { font-size: var(--step--1); color: var(--muted); }
+
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 22px 24px; box-shadow: var(--shadow); display: grid; gap: 18px; }
+.card.gate { background: var(--check-soft); border-color: color-mix(in srgb, var(--check) 35%, var(--line)); }
+.card.is-current { box-shadow: 0 0 0 2px var(--c), var(--shadow); }
+.card.gate.is-current { box-shadow: 0 0 0 2px var(--check), var(--shadow); }
+.card > header { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; align-items: start; }
+.card > header .t { display: grid; gap: 2px; min-width: 0; }
+.tag { font-family: var(--font-mono); font-size: .74rem; letter-spacing: .06em; text-transform: uppercase; color: var(--c); }
+.gate .tag, .tag.g { color: var(--check); }
+.card h3 { font-family: var(--font-hand); font-weight: 700; font-size: var(--step-2); line-height: 1.2; }
+.card .acts { display: flex; gap: 8px; flex-wrap: wrap; }
+
+/* ---------- phase body (shared by overview + focus) ---------- */
+.pb { display: grid; gap: 20px; max-width: 68ch; --halo: var(--sunk); }
+.pb .one { font-family: var(--font-hand); font-size: var(--step-1); font-weight: 600; line-height: 1.35; }
+.pb .why { color: var(--muted); }
+.lists { display: grid; gap: 16px; }
+.lists h4 { font-family: var(--font-mono); font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 600; margin-bottom: 6px; }
+.lists ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 5px; }
+.lists li { position: relative; padding-left: 18px; }
+.lists li::before { content: ""; position: absolute; left: 3px; top: .62em; width: 6px; height: 6px; border-radius: 50%; background: var(--c); }
+.gate .lists li::before { background: var(--check); }
+.lists .avoid li::before { content: "✕"; width: auto; height: auto; background: none; top: 0; left: 0; color: var(--mix); font-size: .8rem; line-height: 1.9; }
+.tool { background: var(--sunk); border-radius: 12px; padding: 14px 16px; display: grid; gap: 12px; }
+.gate .tool { background: var(--surface); --halo: var(--surface); }
+.tool > h4 { font-family: var(--font-mono); font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+.exit { border: 1.5px solid color-mix(in srgb, var(--check) 70%, transparent); border-radius: 12px; padding: 12px 16px; display: grid; gap: 8px; }
+.exit h4 { font-family: var(--font-mono); font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; color: var(--check); font-weight: 600; }
+.exit ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.exit label { display: flex; gap: 10px; align-items: start; cursor: pointer; }
+.exit input { margin-top: 4px; accent-color: var(--check); width: 16px; height: 16px; flex: none; }
+.exit input:checked + span { color: var(--muted); text-decoration: line-through; }
+
+/* flow */
+.flow { list-style: none; display: flex; flex-wrap: wrap; gap: 8px 24px; margin: 0; padding: 0; }
+.flow li { position: relative; display: flex; gap: 8px; align-items: center; padding: 5px 12px; border-radius: 99px; background: var(--surface); border: 1px solid color-mix(in srgb, var(--check) 35%, var(--line)); font-size: var(--step--1); }
+.flow li:not(:last-child)::after { content: "→"; position: absolute; right: -19px; color: var(--check); }
+.flow .fn { font-family: var(--font-mono); color: var(--check); font-weight: 600; }
+
+/* timer */
+.timer { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.timer .clock { font-family: var(--font-mono); font-size: 2rem; font-variant-numeric: tabular-nums; min-width: 5.5ch; }
+.timer.over .clock { color: var(--mix); }
+.timer input { width: 4.5rem; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 6px 8px; }
+
+/* svg visuals */
+.viz { --halo: var(--surface); background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px; overflow-x: auto; margin: 0; }
+.tool .viz { --halo: var(--sunk); background: transparent; border: 0; padding: 0; }
+.viz svg { display: block; width: 100%; min-width: 480px; height: auto; }
+svg .h { font-family: var(--font-hand); }
+svg .m { font-family: var(--font-mono); }
+svg .halo { paint-order: stroke; stroke: var(--halo, var(--surface)); stroke-width: 5px; stroke-linejoin: round; }
+.roles { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; min-width: 480px; font-size: var(--step--1); }
+.roles b { font-family: var(--font-hand); display: block; font-size: var(--step-0); }
+.scroll-x { overflow-x: auto; }
+
+/* notes */
+.notes { display: grid; gap: 10px; }
+.notes form { display: flex; flex-wrap: wrap; gap: 8px; }
+.notes input, .notes select { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 6px 8px; min-width: 0; }
+.notes input.ts { width: 5.2rem; font-family: var(--font-mono); }
+.notes input.tx { flex: 1 1 200px; }
+.notes ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.notes li { display: grid; grid-template-columns: auto auto minmax(0, 1fr) auto; gap: 10px; align-items: center; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 6px 8px; }
+.notes li.ticked .nt { text-decoration: line-through; color: var(--muted); }
+.notes li.empty { display: block; border: 0; background: none; padding: 0; color: var(--muted); font-size: var(--step--1); }
+.notes .k { font-family: var(--font-mono); font-size: .72rem; padding: 2px 7px; border-radius: 99px; text-transform: uppercase; letter-spacing: .05em; }
+.notes .k.fix { background: var(--mix-soft); color: var(--mix); }
+.notes .k.good { background: var(--check-soft); color: var(--check); }
+.notes .k.maybe { background: var(--create-soft); color: var(--create); }
+.notes .nt { min-width: 0; overflow-wrap: anywhere; }
+.notes .nt code { font-family: var(--font-mono); color: var(--muted); margin-right: 6px; }
+.notes .ctl { display: flex; gap: 2px; }
+.notes .ctl button { border: 0; background: transparent; color: var(--muted); padding: 2px 6px; border-radius: 6px; }
+.notes .ctl button:hover { background: var(--sunk); color: var(--fg); }
+.notes input[type="checkbox"] { accent-color: var(--check); width: 16px; height: 16px; }
+
+/* mix intro bits */
+.levels { display: flex; flex-wrap: wrap; gap: 8px; }
+.levels button { border: 1.5px solid var(--line); background: var(--surface); border-radius: 10px; padding: 8px 12px; text-align: left; display: grid; }
+.levels button small { color: var(--muted); }
+.levels button[aria-pressed="true"] { border-color: var(--mix); background: var(--mix-soft); }
+.steps5 { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; }
+.steps5 div { min-width: 0; display: grid; gap: 2px; align-content: start; padding: 10px 12px; border-top: 3px solid var(--c); background: var(--surface); border-radius: 0 0 10px 10px; }
+.steps5 .grp { font-family: var(--font-mono); font-size: .7rem; letter-spacing: .06em; text-transform: uppercase; color: var(--c); min-height: 1.2em; }
+.steps5 b { font-family: var(--font-hand); }
+.steps5 small { color: var(--muted); }
+
+footer.end { margin-top: 64px; border-top: 1px solid var(--line); padding-top: 22px; display: grid; gap: 14px; }
+footer.end h2 { font-family: var(--font-hand); font-size: var(--step-2); }
+.credit { display: grid; gap: 10px; max-width: 66ch; margin-top: 18px; padding-top: 20px; border-top: 1px solid var(--line); }
+.credit h2 { font-size: var(--step-1) !important; }
+footer.end ol { margin: 0; padding-left: 1.3em; max-width: 66ch; display: grid; gap: 6px; }
+
+/* ---------- focus mode ---------- */
+.focus { position: fixed; inset: 0; z-index: 30; background: var(--bg); display: grid; grid-template-rows: auto minmax(0, 1fr) auto; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+.fbar { display: flex; align-items: center; gap: 12px; padding: 10px max(16px, env(safe-area-inset-right, 0px)) 10px max(16px, env(safe-area-inset-left, 0px)); background: var(--surface); }
+.fbar.top { border-bottom: 1px solid var(--line); }
+.fbar.bottom { border-top: 1px solid var(--line); justify-content: space-between; }
+.fnav { flex: 1; display: flex; justify-content: center; align-items: center; gap: 18px; min-width: 0; overflow-x: auto; padding: 4px 2px; }
+.fgroup { display: flex; align-items: center; gap: 5px; }
+.fstage { border: 0; background: transparent; font-family: var(--font-hand); font-weight: 600; letter-spacing: .1em; font-size: .85rem; color: var(--c); padding: 4px 6px; border-radius: 6px; }
+.fstage[aria-current="step"] { background: color-mix(in srgb, var(--c) 14%, transparent); }
+.pill { width: 30px; height: 30px; flex: none; display: grid; place-items: center; border-radius: 7px; border: 2px solid var(--c); background: transparent; color: var(--c); font-family: var(--font-mono); font-size: .8rem; font-weight: 600; }
+.pill.gate { --c: var(--check); }
+.pill.done { background: var(--c); color: var(--surface); }
+.pill[aria-current="step"] { box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--c); }
+.fmain { overflow-y: auto; overscroll-behavior: contain; }
+.fslide { max-width: 760px; margin: 0 auto; padding: 40px max(16px, env(safe-area-inset-right, 0px)) 64px max(16px, env(safe-area-inset-left, 0px)); display: grid; gap: 22px; }
+.fslide.gate { --halo: var(--surface); }
+.fslide .fhead { display: grid; gap: 4px; }
+.fslide h2 { font-family: var(--font-hand); font-weight: 700; font-size: clamp(2rem, 6vw, 3rem); line-height: 1.1; }
+.fslide.stage-slide h2 { color: var(--c); letter-spacing: .04em; }
+.fslide .pb { max-width: none; }
+.fslide.gate .pb { --halo: var(--check-soft); }
+.fmain.gate { background: var(--check-soft); }
+.fslide .pb .one { font-size: clamp(1.25rem, 3vw, 1.6rem); }
+.phaselist { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.phaselist button { width: 100%; text-align: left; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 12px; align-items: center; padding: 12px 14px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
+.phaselist button:hover { border-color: var(--c); }
+.phaselist .pill { pointer-events: none; }
+.phaselist b { font-family: var(--font-hand); font-size: var(--step-1); display: block; }
+.phaselist small { color: var(--muted); }
+.fbar .side { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.fbar .navbtn { max-width: 40vw; }
+.fbar .navbtn span.lbl { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.fbar .mid { display: flex; align-items: center; gap: 10px; font-size: var(--step--1); color: var(--muted); }
+.fslide.enter-next { animation: inR .28s ease-out; }
+.fslide.enter-prev { animation: inL .28s ease-out; }
+@keyframes inR { from { transform: translateX(28px); opacity: .25; } to { transform: none; opacity: 1; } }
+@keyframes inL { from { transform: translateX(-28px); opacity: .25; } to { transform: none; opacity: 1; } }
+
+/* shortcuts sheet */
+.sheet { position: fixed; inset: 0; z-index: 40; display: grid; place-items: center; background: color-mix(in srgb, var(--bg) 60%, transparent); backdrop-filter: blur(4px); padding: 16px; }
+.sheet .panel { width: min(420px, 100%); background: var(--surface); border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow); padding: 20px; display: grid; gap: 14px; }
+.sheet h2 { font-family: var(--font-hand); font-size: var(--step-1); }
+.sheet dl { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 9px 16px; align-items: center; }
+.sheet dt { display: flex; gap: 4px; }
+.sheet dd { margin: 0; }
+
+@media (max-width: 720px) {
+  .cols { grid-template-columns: minmax(0, 1fr); gap: 14px; }
+  .col { border-left: 0; padding: 0; }
+  .principles, .steps5 { grid-template-columns: minmax(0, 1fr); }
+  .card { padding: 18px; }
+  .fnav { justify-content: flex-start; gap: 10px; }
+  .fstage { display: none; }
+  .fbar .navbtn .lbl, .hide-sm { display: none; }
+  .fslide { padding-top: 28px; }
+}
+
+/* ---------- consistency pass ---------- */
+:root { --r-sm: 8px; --r-md: 12px; --r-lg: 16px; }
+.wrap { max-width: 820px; }
+.pb { max-width: none; }
+.eyebrow, .tag, .lists h4, .tool > h4, .exit h4, .now .where, .steps5 .grp {
+  font-family: var(--font-mono); font-size: .72rem; letter-spacing: .08em; font-weight: 600; text-transform: uppercase;
+}
+.card, .board, .sheet .panel { border-radius: var(--r-lg); }
+.tool, .viz, .exit, .phaselist button, .levels button, .theme { border-radius: var(--r-md); }
+.btn, .node, .notes li, .controls input, .timer input, .notes input, .notes select { border-radius: var(--r-sm); }
+header.top { padding-block: 40px 28px; }
+.board { margin-top: 0; }
+.principles { margin-top: 48px; }
+.stage { margin-top: 72px; gap: 20px; }
+.stagehead { gap: 14px; padding-top: 16px; }
+.card { padding: 24px; gap: 20px; }
+.lists { gap: 18px; }
+footer.end { margin-top: 72px; }
+@media (max-width: 720px) { .card { padding: 18px; } }
+
+/* mixing level */
+:root[data-mix="1"] .lvl-detail { display: none; }
+.lvl-3 { display: none; }
+:root[data-mix="3"] .lvl-3 { display: block; }
+
+/* goal / mindset / avoid */
+.lists { gap: 0; }
+.lists section { padding-block: 16px; border-top: 1px solid var(--line); display: grid; gap: 10px; }
+.lists section:first-child { border-top: 0; padding-top: 4px; }
+.lists section:last-child { padding-bottom: 0; }
+.lists h4 { display: flex; align-items: center; gap: 10px; margin: 0; color: var(--c); }
+.lists .ico { width: 24px; height: 24px; flex: none; display: grid; place-items: center; border-radius: 50%; font-family: var(--font-body); font-size: .8rem; letter-spacing: 0; background: color-mix(in srgb, var(--c) 16%, transparent); color: var(--c); }
+.lists ul, .lists ol { margin: 0; padding: 0 0 0 34px; list-style: none; display: grid; gap: 6px; }
+.lists li { position: relative; padding-left: 0; }
+.lists li::before { content: ""; position: absolute; left: -18px; top: .62em; width: 6px; height: 6px; border-radius: 50%; background: var(--c); }
+.lists .kind-steps ol { counter-reset: st; }
+.lists .kind-steps li { counter-increment: st; }
+.lists .kind-steps li::before { content: counter(st); width: auto; height: auto; background: none; border-radius: 0; top: .1em; left: -20px; font-family: var(--font-mono); font-size: .78rem; font-weight: 600; color: var(--c); }
+.lists .kind-mind li { font-family: var(--font-hand); font-size: 1.05rem; line-height: 1.45; }
+.lists .kind-mind li::before { width: 8px; height: 2px; border-radius: 1px; top: .78em; left: -19px; }
+.lists .kind-avoid h4 { color: var(--mix); }
+.lists .kind-avoid .ico { background: var(--mix-soft); color: var(--mix); }
+.lists .kind-avoid li { color: var(--muted); }
+.lists .kind-avoid li::before { content: "✕"; width: auto; height: auto; background: none; border-radius: 0; top: 0; left: -19px; color: var(--mix); font-size: .78rem; line-height: 1.9; }
+.gate .lists li::before { background: var(--check); }
+.gate .lists .kind-steps li::before, .gate .lists .kind-avoid li::before { background: none; }
+
+/* depth switch + how panels */
+:root[data-mix="2"] .lvl-simple { display: none; }
+:root[data-mix="2"] .lists .lvl-simple:first-child + section { border-top: 0; padding-top: 4px; }
+.depth { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.depth-lbl { font-family: var(--font-mono); font-size: .72rem; letter-spacing: .08em; font-weight: 600; text-transform: uppercase; color: var(--muted); }
+.seg { display: inline-flex; gap: 2px; padding: 3px; border: 1px solid var(--line); border-radius: var(--r-md); background: var(--surface); }
+.seg button { border: 0; background: transparent; border-radius: 7px; padding: 5px 14px; font-size: var(--step--1); color: var(--muted); }
+.seg button:hover { color: var(--fg); }
+.seg button[aria-pressed="true"] { background: var(--mix-soft); color: var(--mix); font-weight: 700; }
+.how { gap: 14px; }
+.howblk { display: grid; gap: 6px; }
+.howblk + .howblk { border-top: 1px solid var(--line); padding-top: 12px; }
+.howblk h5 { margin: 0; font-family: var(--font-hand); font-size: var(--step-0); font-weight: 600; color: var(--c); }
+.howblk ul { margin: 0; padding-left: 1.15em; display: grid; gap: 4px; }
+.howblk li::marker { color: var(--c); }
+.howtools { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; border-top: 1px solid var(--line); padding-top: 12px; }
+.howtools .depth-lbl { margin-right: 4px; }
+.chip { font-size: var(--step--1); padding: 3px 10px; border-radius: 99px; border: 1px solid var(--line); background: var(--surface); }
+.gate .how .chip { background: var(--sunk); }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <pattern id="h-create" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(35)"><rect width="7" height="7" style="fill:var(--create-soft)"/><line x1="0" y1="0" x2="0" y2="7" style="stroke:var(--create);stroke-width:2.5"/></pattern>
+    <pattern id="h-arrange" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(35)"><rect width="7" height="7" style="fill:var(--arrange-soft)"/><line x1="0" y1="0" x2="0" y2="7" style="stroke:var(--arrange);stroke-width:2.5"/></pattern>
+    <pattern id="h-mix" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(35)"><rect width="7" height="7" style="fill:var(--mix-soft)"/><line x1="0" y1="0" x2="0" y2="7" style="stroke:var(--mix);stroke-width:2.5"/></pattern>
+    <marker id="ah-create" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--create)"/></marker>
+    <marker id="ah-arrange" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--arrange)"/></marker>
+    <marker id="ah-mix" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--mix)"/></marker>
+    <marker id="ah-fg" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--muted)"/></marker>
+  </defs>
+</svg>
+
+<div class="now" id="now" aria-live="polite">
+  <div class="wrap">
+    <span class="dot" id="nowDot"></span>
+    <div class="txt">
+      <span class="where" id="nowWhere">Now working on</span>
+      <span class="mind" id="nowMind"></span>
+    </div>
+    <div class="acts">
+      <button class="btn" type="button" data-act="focus">Focus <kbd>F</kbd></button>
+      <button class="btn primary" id="nowDone" type="button">Mark done, next</button>
+    </div>
+  </div>
+</div>
+
+<div class="wrap" id="overview">
+  <header class="top">
+    <div class="toprow">
+      <span class="eyebrow">A guide to <a href="https://www.youtube.com/watch?v=pOvyNUoNOng" target="_blank" rel="noopener">Finish music whenever you want</a> by <a href="https://www.youtube.com/@luca-bade" target="_blank" rel="noopener">Luca Bade</a></span>
+      <div class="theme" role="group" aria-label="Theme">
+        <button type="button" data-theme-set="auto">Auto</button>
+        <button type="button" data-theme-set="light">Light</button>
+        <button type="button" data-theme-set="dark">Dark</button>
+      </div>
+    </div>
+    <h1>The <span class="c-c">C</span><span class="c-a">A</span><span class="c-m">M</span> System</h1>
+    <p class="lede">Finishing music is a sequencing problem. Create, Arrange and Mix each need a different mindset, so do them one at a time, in two phases each, and cross a checkpoint before you move on.</p>
+    <div class="controls">
+      <input id="track" type="text" placeholder="Track you're finishing" aria-label="Track you're finishing" autocomplete="off">
+      <button class="btn primary" type="button" data-act="focus">Open focus mode <kbd>F</kbd></button>
+      <button class="btn ghost" type="button" data-act="keys">Shortcuts <kbd>?</kbd></button>
+      <span id="resetArea"></span>
+    </div>
+  </header>
+
+  <section class="board" aria-label="The CAM board">
+    <h2>The CAM System</h2>
+    <div class="cols" id="cols"></div>
+    <div class="strip" id="strip"></div>
+    <div class="boardfoot"><span id="progressTxt"></span><span>Hatched = done · green = checkpoints</span></div>
+  </section>
+
+  <section class="principles" aria-label="Core ideas">
+    <div><h3>One mindset at a time</h3><p>Creating, arranging and mixing think in different ways. Swapping between them causes most stuck tracks.</p></div>
+    <div><h3>Order, not a formula</h3><p>Nothing new to do. It reorders what you already do, the way a cook sources, then cooks, then plates.</p></div>
+    <div><h3>Checkpoints keep you moving</h3><p>Each stage ends at a green marker, so you always know when it's finished and don't drift back.</p></div>
+    <div><h3>Aim for imperfectly finished</h3><p>Perfect is the wrong target at every stage. Imperfect is what gets finished.</p></div>
+  </section>
+
+  <div id="stages"></div>
+
+  <footer class="end">
+    <h2>Make it yours</h2>
+    <ol>
+      <li><b>Tailor your own process.</b> Your genre, strengths, weaknesses and gaps decide the details inside each phase.</li>
+      <li><b>Test and refine.</b> When a problem keeps coming back, change the process so it can't.</li>
+      <li><b>Prove it with evidence.</b> Finished tracks build the confidence that silences self-doubt.</li>
+    </ol>
+    <div class="credit">
+      <h2>Credit</h2>
+      <p>This is an unofficial, fan-made study guide to <a href="https://www.youtube.com/watch?v=pOvyNUoNOng" target="_blank" rel="noopener">Finish music whenever you want (with this system)</a> by <b>Luca Bade</b>. The CAM System, its phases, and every idea on this page are his. This page only reorganises them so you can follow along while you work.</p>
+      <p>Watch the full video and <a href="https://www.youtube.com/@luca-bade" target="_blank" rel="noopener">follow his channel</a>. To build your own process with him, see his <a href="https://playitloud.online/deepdive" target="_blank" rel="noopener">Play It Loud workshop</a>. The music in the video is <a href="https://badeo.bandcamp.com/album/sequence-d" target="_blank" rel="noopener">his</a> too.</p>
+      <p class="note">Not affiliated with or endorsed by Luca Bade. Page by <a href="https://robertbenjamin.co" target="_blank" rel="noopener">Robert Benjamin</a>, open source on <a href="https://github.com/robertbenjamin/make-music" target="_blank" rel="noopener">GitHub</a>. Your progress and notes are saved only in your own browser.</p>
+    </div>
+  </footer>
+</div>
+
+<div class="focus" id="focus" hidden role="region" aria-label="Focus mode">
+  <div class="fbar top">
+    <button class="btn ghost" type="button" data-act="exit" title="Back to overview">✕<span class="hide-sm">Overview</span> <kbd>Esc</kbd></button>
+    <nav class="fnav" id="fnav" aria-label="Stages and phases"></nav>
+    <button class="btn ghost" type="button" data-act="keys" title="Keyboard shortcuts"><kbd>?</kbd></button>
+  </div>
+  <div class="fmain" id="fmain" tabindex="-1"><div class="fslide" id="fslide"></div></div>
+  <div class="fbar bottom">
+    <div class="side"><button class="btn navbtn" type="button" id="fprev"><kbd>←</kbd><span class="lbl"></span></button></div>
+    <div class="mid" id="fmid"></div>
+    <div class="side"><button class="btn navbtn primary" type="button" id="fnext"><span class="lbl"></span><kbd>→</kbd></button></div>
+  </div>
+</div>
+
+<div class="sheet" id="sheet" hidden role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+  <div class="panel">
+    <h2 id="sheetTitle">Keyboard shortcuts</h2>
+    <dl>
+      <dt><kbd>F</kbd></dt><dd>Focus mode on or off</dd>
+      <dt><kbd>←</kbd><kbd>→</kbd></dt><dd>Previous or next</dd>
+      <dt><kbd>1</kbd>–<kbd>9</kbd></dt><dd>Jump to a phase (1–3 Create, 4–6 Arrange, 7–9 Mix)</dd>
+      <dt><kbd>D</kbd></dt><dd>Mark this phase done</dd>
+      <dt><kbd>T</kbd></dt><dd>Start or pause the session timer</dd>
+      <dt><kbd>?</kbd></dt><dd>Show this list</dd>
+      <dt><kbd>Esc</kbd></dt><dd>Close this, or leave focus mode</dd>
+    </dl>
+    <button class="btn" type="button" data-act="closekeys">Close</button>
+  </div>
+</div>
+
+<script>
+const STAGES = [
+  { id: "create", name: "Create", color: "var(--create)",
+    intro: `<p>Creativity is fickle, so creative work comes first, while the slate is blank. The stage starts wide, then narrows, then checks the loop is ready to become a song.</p>
+      <figure class="viz">
+        <svg viewBox="0 0 600 150" role="img" aria-label="The creative stage splits into an experimental phase and a functional phase, ending at the loop validation checkpoint before arrangement">
+          <rect x="40" y="14" width="380" height="30" rx="3" fill="url(#h-create)" style="stroke:var(--create);stroke-width:2"/>
+          <rect x="420" y="14" width="160" height="30" rx="3" fill="url(#h-arrange)" style="stroke:var(--arrange);stroke-width:2;opacity:.55"/>
+          <text x="230" y="35" text-anchor="middle" class="h halo" style="font-size:18px;font-weight:600;fill:var(--fg)">Creative</text>
+          <text x="500" y="35" text-anchor="middle" class="h halo" style="font-size:15px;fill:var(--muted)">arrange →</text>
+          <path d="M110,90 V68 H350 V90 M230,68 V52" style="fill:none;stroke:var(--fg);stroke-width:2;stroke-linecap:round;stroke-linejoin:round"/>
+          <text x="110" y="110" text-anchor="middle" class="h" style="font-size:15px;fill:var(--fg)">Experimental</text>
+          <text x="110" y="128" text-anchor="middle" class="h" style="font-size:15px;fill:var(--fg)">Phase</text>
+          <text x="350" y="110" text-anchor="middle" class="h" style="font-size:15px;fill:var(--fg)">Functional</text>
+          <text x="350" y="128" text-anchor="middle" class="h" style="font-size:15px;fill:var(--fg)">Phase</text>
+          <line x1="420" y1="44" x2="420" y2="86" style="stroke:var(--check);stroke-width:2"/>
+          <circle cx="420" cy="98" r="12" style="fill:none;stroke:var(--check);stroke-width:2"/>
+          <text x="420" y="104" text-anchor="middle" style="font-size:16px;fill:var(--check)">✱</text>
+          <text x="442" y="104" class="h" style="font-size:15px;fill:var(--check)">Loop Validation</text>
+        </svg>
+      </figure>` },
+  { id: "arrange", name: "Arrange", color: "var(--arrange)",
+    intro: `<p>Arrangement is where most tracks stall. The three usual problems:</p>
+      <ul><li><span class="strike">Getting stuck halfway through</span> <span class="note">solved by loop validation</span></li>
+      <li>It loses focus and gets boring</li>
+      <li>You get sick of it and start a new loop</li></ul>
+      <p>So the stage splits in two: first get through the whole story, then make it move.</p>` },
+  { id: "mix", name: "Mix", color: "var(--mix)",
+    intro: `<p>Mixing is sculpting: the statue already exists. Without a clear focus it turns into quicksand. You don't have to become a mix engineer, so pick how deep you want to go.</p>
+      ${depthHTML()}
+      <p class="note lvl-simple">Streamlined: just the two jobs, solve problems then colour.</p>
+      <p class="note lvl-detail">In depth: the five steps, plus how he does each one.</p>
+      <p class="note">Going further than this? Mixing is its own craft, worth learning separately.</p>
+      <p>You're no longer producing parts. You're hearing how they interact in three planes of space. Two goals hold for the whole stage: <b>beat the premix</b>, and <b>don't go backwards</b>.</p>
+      <figure class="viz">
+        <svg viewBox="0 0 600 300" role="img" aria-label="A room between two speakers: frequency runs top to bottom, stereo left to right, depth front to back">
+          <g style="fill:none;stroke:var(--line);stroke-width:1.5">
+            <rect x="20" y="20" width="560" height="260" rx="4"/>
+            <rect x="210" y="105" width="180" height="90"/>
+            <path d="M20,20 L210,105 M580,20 L390,105 M20,280 L210,195 M580,280 L390,195"/>
+          </g>
+          <g style="fill:none;stroke:var(--fg);stroke-width:1.5">
+            <rect x="36" y="32" width="30" height="42" rx="3"/><circle cx="51" cy="58" r="8"/>
+            <rect x="534" y="32" width="30" height="42" rx="3"/><circle cx="549" cy="58" r="8"/>
+          </g>
+          <line x1="150" y1="44" x2="150" y2="256" marker-start="url(#ah-create)" marker-end="url(#ah-create)" style="stroke:var(--create);stroke-width:3"/>
+          <line x1="44" y1="150" x2="556" y2="150" marker-start="url(#ah-arrange)" marker-end="url(#ah-arrange)" style="stroke:var(--arrange);stroke-width:3"/>
+          <line x1="300" y1="270" x2="300" y2="204" marker-end="url(#ah-mix)" style="stroke:var(--mix);stroke-width:3"/>
+          <text x="164" y="64" class="h halo" style="font-size:15px;font-weight:600;fill:var(--create)">Frequency</text>
+          <text x="164" y="82" class="m halo" style="font-size:10px;fill:var(--muted)">top ↔ bottom</text>
+          <text x="440" y="140" class="h halo" style="font-size:15px;font-weight:600;fill:var(--arrange)">Stereo</text>
+          <text x="440" y="172" class="m halo" style="font-size:10px;fill:var(--muted)">left ↔ right</text>
+          <text x="314" y="250" class="h halo" style="font-size:15px;font-weight:600;fill:var(--mix)">Depth</text>
+          <text x="314" y="266" class="m halo" style="font-size:10px;fill:var(--muted)">front ↔ back</text>
+        </svg>
+      </figure>
+      <p class="lvl-detail">The in-depth version runs as five steps:</p>
+      <div class="steps5 lvl-detail">
+        <div style="--c:var(--mix)"><span class="grp">Solve problems</span><b>1 · Setup</b><small>New project, premix in</small></div>
+        <div style="--c:var(--mix)"><span class="grp"></span><b>2 · Faders & EQ</b><small>Foundations first</small></div>
+        <div style="--c:var(--mix)"><span class="grp"></span><b>3 · Dynamics & width</b><small>Sides, peaks</small></div>
+        <div style="--c:var(--create)"><span class="grp">Colouring</span><b>4 · Colouring</b><small>Groups, sends, tone</small></div>
+        <div style="--c:var(--check)"><span class="grp">Checkpoint</span><b>5 · Finalising</b><small>Export, first listen</small></div>
+      </div>` }
+];
+
+const PHASES = [
+  { id: "create-1", stage: "create", n: "1", tag: "Create · Phase 1", title: "Experiment",
+    one: "Throw paint on the canvas. There are no wrong answers.",
+    why: "Your style comes from here. Creative energy doesn't show up on demand, so spend it first, while the slate is blank.",
+    goal: ["Find the creative flow and ride it as long as it lasts", "Do it in one sitting, so you never have to force your way back in", "Pick one rabbit hole: sequencing, synthesis, audio manipulation, processing, resampling"],
+    mindset: ["You don't need a song yet", "Songwriting hat off", "Functional work only if it feeds the creativity"],
+    avoid: ["Distractions", "Arranging or mixing"],
+    exit: ["The flow has run its course, or the timer's up", "There's material worth building a loop around"],
+    tool: "timer" },
+  { id: "create-2", stage: "create", n: "2", tag: "Create · Phase 2", title: "Functional",
+    one: "Build every option the arrangement will need. Stay in the loop.",
+    why: "Tracks stall halfway through the arrangement when there weren't enough options built here.",
+    goal: ["Fill out drums, supporting parts, background and groove", "Build macros, variations and energy levels to build up to and strip back", "Make sure the main elements can drop out and it still works"],
+    mindset: ["Still creative, but no deep rabbit holes", "Lock in genre, tempo and style", "Think ahead to the arrangement"],
+    avoid: ["Starting the arrangement", "Going deep on a single sound"],
+    exit: ["A full-sounding master loop", "Options in every group, to add, remove and build towards"] },
+  { id: "create-gate", stage: "create", n: "✓", gate: true, tag: "Create · Checkpoint", title: "Loop Validation",
+    one: "Know where the track is going before you arrange it.",
+    why: "An author who knows the ending can foreshadow it. Knowing your second half is what stops you stalling halfway.",
+    goal: ["Strip the loop back and see where it goes", "Decide what the first half is and what the second half builds towards", "Choose what to hold back for the second half"], goalLabel: "How",
+    mindset: ["You need to know where, not yet how"],
+    exit: ["I know where the arrangement is going", "I know what I'm saving for the second half", "If not, go back for another Functional pass"] },
+
+  { id: "arrange-1", stage: "arrange", n: "1", tag: "Arrange · Phase 1", title: "The Sketch",
+    one: "Get from start to finish. Keep every move purposeful.",
+    why: "Lay down the foundation and the story arc you'll refine later. Knowing a structure means you can choose to break it.",
+    goal: ["Arrange the whole track, start to finish", "Get the main story movements", "Build foundations, not details"],
+    avoid: ["Lingering on one part", "Redoing sections", "Listening on repeat until it feels cemented"],
+    exit: ["The whole track is laid out", "There's a clear change from Act 1 to Act 2"],
+    tool: "structure" },
+  { id: "arrange-2", stage: "arrange", n: "2", tag: "Arrange · Phase 2", title: "Progressions & Transitions",
+    one: "Make every section move and every boundary land.",
+    why: "Now work inside sections and between them, plus whatever else it takes to finish the arrangement.",
+    goal: ["Progressions: shape the energy within each section, never flat", "Transitions: decide how each section hands over. None at all is a valid choice", "Automation, one-off moments, foreshadowing"],
+    mindset: ["Aim for an imperfectly finished arrangement"],
+    avoid: ["A punchy, polished sound", "Mixdown tweaks like the low end"],
+    exit: ["Every section moves", "Every transition is a choice", "Ready for the final check"],
+    tool: "pt" },
+  { id: "arrange-gate", stage: "arrange", n: "✓", gate: true, tag: "Arrange · Checkpoint", title: "The First Listen",
+    one: "Step away, then hear it like a listener: for the first time.",
+    why: "Music is for ears, not eyes. Fresh ears turn vague doubts into a plan, and tell you when the arrangement is done.",
+    flow: ["Export", "24 hours away", "Play it through", "Sort by priority", "Tick off"],
+    mindset: ["Moderate volume", "Don't touch or stop playback", "Timestamp everything: good, bad, and ? for maybes"], mindsetLabel: "During the listen",
+    exit: ["Every note is ticked off", "The premix is exported for the mix"],
+    tool: "notes" },
+
+  { id: "mix-1", stage: "mix", n: "1", tag: "Mix · Phase 1", title: "Solve Problems",
+    one: "Fix things at the source. Beat the premix.",
+    why: "Build it like a house: foundations first. Plugins thrown at problems tend to make new ones.",
+    goal: ["Faders and EQ first, foundations up", "Then fix what's clearly wrong: peaks, low end, width"], goalSimple: true,
+    steps: ["Setup: fresh project, grouped, premix imported as a reference", "Faders & EQ: kick, bass and drums first, then the rest", "Dynamics & width: sides, mid-side, rogue peaks"],
+    mindset: ["Volume and EQ are linked. Set them together", "Compare to the premix constantly"],
+    avoid: ["Plugins as a first resort", "Any change that's worse than the premix"],
+    exit: ["Balance and EQ beat the premix", "Peaks tamed, width deliberate"],
+    how: [
+      ["Setup", ["A new project with five colour-coded groups: drums, bass, FX & transitions, synths, ambience (plus vocals if there are any)", "Import reference premixes: the full premix, drums only, and low end only (kick + bass)", "Map their solo switches to keys 1–4 (Cmd-K in Ableton) to flip between before and now", "Worth about an hour"]],
+      ["Faders", ["Keep groups at 0. Pull every individual track down, and remove sends and panning", "Kick first, peaking around −10 dB, so headroom never becomes a problem", "Then bass and drums, then everything else", "Find each level from below: push it too loud, pull it too quiet, then raise it until it sits"]],
+      ["EQ", ["Three types are enough: utility (cut low end that isn't needed), tonal shaping (gentle slopes), surgical (problem frequencies)", "Steep slopes sound unnatural for tone", "A boost plus a lower fader is a cut to everything else, so sharp boosts can leave the rest of the track dull"]],
+      ["Dynamics & width", ["Loudness meter on the master. Solo each group to see where peaks come from, usually the drums", "Tame drum peaks with a clipper", "No low end in the sides. Widen only what should feel big", "Check with Ableton's Sides Only preset"]]
+    ],
+    tools: ["Youlean Loudness Meter 2 (free)", "Standard Clip (~€20)", "Ozone Imager 2 (free)"] },
+  { id: "mix-2", stage: "mix", n: "2", tag: "Mix · Phase 2", title: "Colouring",
+    one: "Now decorate: tone, space and character.",
+    why: "With the problems solved, add colour and glue. It isn't scientific: try it, judge better or worse.",
+    goal: ["Group processing", "Reverb and delay sends", "Creative sends, blended in a little"],
+    mindset: ["A little goes a long way", "Still: don't go backwards"],
+    exit: ["The tones are right"],
+    how: [
+      ["Glue", ["Drive the drum group (he uses Radiator) so the kit clamps together when the kick hits"]],
+      ["Creative send", ["Load a send with effects: compression, vinyl distortion, EQ, noise, more distortion", "Blend only a little back in, for grit and crispness on top"]],
+      ["Space", ["Reverb and delay sends for depth"]]
+    ] },
+  { id: "mix-gate", stage: "mix", n: "✓", gate: true, tag: "Mix · Checkpoint", title: "Mix Finalisation",
+    one: "Export, check it everywhere, then do the first listen again.",
+    why: "The same reset as the arrangement checkpoint, aimed at the mix.",
+    flow: ["Export premaster", "Other systems", "24 hours away", "First listen", "Fix notes"],
+    how: [["Systems he checks on", ["Bluetooth speakers", "Earbuds", "The car"]]],
+    exit: ["All notes fixed", "Ready for mastering"],
+    tool: "notes" }
+];
+
+const SLIDES = [];
+STAGES.forEach(st => { SLIDES.push({ kind: "stage", st }); PHASES.filter(p => p.stage === st.id).forEach(p => SLIDES.push({ kind: "phase", p, st })); });
+
+/* ---------- state ---------- */
+const KEY = "cam-system-v1";
+const blank = () => ({ track: "", current: "create-1", done: {}, checks: {}, notes: {}, level: 1, timerMin: 25, focus: false, slide: 1 });
+let S = blank();
+try { const raw = localStorage.getItem(KEY); if (raw) S = Object.assign(blank(), JSON.parse(raw)); } catch (e) {}
+if (S.level !== 1 && S.level !== 2) S.level = S.level === 3 ? 2 : 1;
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} };
+const P = id => PHASES.find(p => p.id === id);
+const stageOf = id => STAGES.find(s => s.id === P(id).stage);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const colorOf = p => p.gate ? "var(--check)" : stageOf(p.id).color;
+
+/* ---------- shared phase body ---------- */
+function listsHTML(p) {
+  const L = [
+    ["goal", p.goalLabel || "Goal", "goal", "◎"],
+    ["steps", "Steps", "steps", "◎"],
+    ["mindset", p.mindsetLabel || "Mindset", "mind", "✦"],
+    ["avoid", "Avoid", "avoid", "✕"]
+  ];
+  return `<div class="lists">${L.filter(([k]) => p[k]).map(([k, label, cls, ico]) => {
+    const tag = k === "steps" ? "ol" : "ul";
+    return `<section class="kind-${cls}${k === "steps" ? " lvl-detail" : ""}${k === "goal" && p.goalSimple ? " lvl-simple" : ""}">
+      <h4><span class="ico" aria-hidden="true">${ico}</span>${label}</h4>
+      <${tag}>${p[k].map(i => `<li>${i}</li>`).join("")}</${tag}>
+    </section>`;
+  }).join("")}</div>`;
+}
+function toolHTML(p, pre) {
+  if (p.tool === "timer") return `
+    <div class="tool"><h4>Session timer</h4>
+      <div class="timer">
+        <span class="clock" data-clock>25:00</span>
+        <label class="note" for="${pre}-tmin">Minutes</label>
+        <input id="${pre}-tmin" type="number" min="1" max="240" value="${S.timerMin}" data-tmin>
+        <button type="button" class="btn primary" data-tgo>Start <kbd>T</kbd></button>
+        <button type="button" class="btn" data-treset>Reset</button>
+      </div>
+    </div>`;
+  if (p.tool === "structure") return `
+    <div class="tool"><h4>A simple story structure</h4>
+      <figure class="viz"><svg viewBox="0 0 640 212" role="img" aria-label="Energy over time: intro rises to the focus, dips in the break, peaks in the main section, falls in the outro">
+        <rect x="30" y="186" width="120" height="8" fill="url(#h-create)"/><rect x="150" y="186" width="120" height="8" fill="url(#h-mix)"/><rect x="270" y="186" width="100" height="8" fill="url(#h-arrange)"/><rect x="370" y="186" width="140" height="8" fill="url(#h-mix)"/><rect x="510" y="186" width="110" height="8" fill="url(#h-create)"/>
+        <g class="h" style="font-size:15px;fill:var(--muted)" text-anchor="middle"><text x="90" y="20">intro</text><text x="210" y="20">focus</text><text x="320" y="20">break</text><text x="440" y="20">main</text><text x="565" y="20">outro</text></g>
+        <g style="stroke:var(--line);stroke-width:1.5;stroke-dasharray:4 5"><line x1="150" y1="30" x2="150" y2="180"/><line x1="270" y1="30" x2="270" y2="180"/><line x1="370" y1="30" x2="370" y2="180"/><line x1="510" y1="30" x2="510" y2="180"/></g>
+        <line x1="30" y1="180" x2="620" y2="180" style="stroke:var(--fg);stroke-width:1.5"/>
+        <line x1="30" y1="180" x2="30" y2="34" style="stroke:var(--fg);stroke-width:1.5"/>
+        <path d="M40,165 C90,160 120,130 150,118 C185,104 205,86 225,84 C255,82 265,118 290,140 C310,156 340,152 370,128 C410,96 425,52 450,48 C480,45 495,80 515,112 C540,148 575,160 610,164" style="fill:none;stroke:var(--arrange);stroke-width:3;stroke-linecap:round"/>
+        <circle cx="225" cy="84" r="4.5" style="fill:var(--arrange)"/><circle cx="450" cy="48" r="4.5" style="fill:var(--arrange)"/>
+        <g class="h halo" style="font-size:14px;fill:var(--fg)" text-anchor="middle"><text x="225" y="72">Act 1</text><text x="450" y="38">Act 2</text></g>
+        <g class="m" style="font-size:11px;fill:var(--muted)"><text x="600" y="208" text-anchor="end">time →</text><text x="22" y="40" text-anchor="end" transform="rotate(-90 22 40)">energy →</text></g>
+      </svg></figure>
+      <div class="scroll-x"><div class="roles">
+        <div><b>intro</b>context</div>
+        <div><b>focus</b>first main section; hold something back</div>
+        <div><b>break</b>contrast, tension</div>
+        <div><b>main</b>the payoff, with a change</div>
+        <div><b>outro</b>resolution</div>
+      </div></div>
+      <p class="note">Energy should move: never flat, never backwards. Simple arrangements usually work best.</p>
+    </div>`;
+  if (p.tool === "pt") {
+    const shapes = [["build up", "M12,80 C50,78 90,50 130,18", "var(--arrange)"], ["high, low, high", "M12,24 C40,24 55,74 75,74 C95,74 110,26 130,20", "var(--arrange)"], ["slow rise", "M12,76 C40,70 50,60 70,62 C90,64 105,44 130,34", "var(--arrange)"], ["flat ✕", "M12,50 H130", "var(--mix)"]];
+    const panels = shapes.map(([label, d, c], i) => `<g transform="translate(${8 + i * 148},0)">
+        <path d="M6,8 V86 H136" style="fill:none;stroke:var(--line);stroke-width:1.5"/>
+        <path d="${d}" style="fill:none;stroke:${c};stroke-width:3;stroke-linecap:round"/>
+        <text x="70" y="108" text-anchor="middle" class="h" style="font-size:14px;fill:${c === "var(--mix)" ? "var(--mix)" : "var(--fg)"}">${label}</text></g>`).join("");
+    const secs = [["intro", 16, 110, "create"], ["focus", 110, 270, "mix"], ["break", 270, 350, "arrange"], ["main", 350, 510, "mix"], ["outro", 510, 584, "create"]];
+    const bars = secs.map(([n, a, b, c]) => `<rect x="${a}" y="40" width="${b - a}" height="18" fill="url(#h-${c})" style="stroke:var(--${c});stroke-width:1.2"/>
+      <text x="${(a + b) / 2}" y="32" text-anchor="middle" class="h" style="font-size:13px;fill:var(--fg)">${n}</text>
+      <line x1="${a + 10}" y1="76" x2="${b - 10}" y2="76" marker-end="url(#ah-fg)" style="stroke:var(--muted);stroke-width:1.5"/>`).join("");
+    const boxes = [110, 270, 350, 510].map(x => `<rect x="${x - 11}" y="34" width="22" height="30" rx="4" style="fill:none;stroke:var(--fg);stroke-width:2;stroke-dasharray:3 3"/>`).join("");
+    return `
+    <div class="tool"><h4>Progressions inside sections, transitions between them</h4>
+      <figure class="viz"><svg viewBox="0 0 600 104" role="img" aria-label="Sections from intro to outro with progression arrows inside each and dashed transition boxes at each boundary">
+        ${bars}${boxes}
+        <text x="270" y="14" text-anchor="middle" class="m" style="font-size:10px;fill:var(--fg);letter-spacing:.06em">TRANSITION</text>
+        <text x="190" y="96" text-anchor="middle" class="m" style="font-size:10px;fill:var(--muted);letter-spacing:.06em">PROGRESSION</text>
+      </svg></figure>
+      <figure class="viz"><svg viewBox="0 0 600 116" role="img" aria-label="Energy shapes within a section: build up, high-low-high and slow rise work; flat does not">${panels}</svg></figure>
+    </div>`;
+  }
+  if (p.tool === "notes") return `
+    <div class="tool"><h4>First-listen notes</h4>
+      <div class="notes" data-notes="${p.id}">
+        <form data-nform="${p.id}">
+          <input class="ts" id="${pre}-ts-${p.id}" placeholder="1:32" aria-label="Timestamp">
+          <input class="tx" id="${pre}-tx-${p.id}" placeholder="What you heard" aria-label="Note">
+          <select id="${pre}-tk-${p.id}" aria-label="Type"><option value="fix">fix</option><option value="maybe">maybe ?</option><option value="good">good</option></select>
+          <button class="btn primary" type="submit">Add</button>
+        </form>
+        <ol></ol>
+      </div>
+      <p class="note">Write first, sort later: ↑ ↓ sets priority, then tick them off.</p>
+    </div>`;
+  return "";
+}
+function depthHTML() {
+  return `<div class="depth" role="group" aria-label="Mixing depth"><span class="depth-lbl">Depth</span>
+    <span class="seg"><button type="button" data-level="1">Streamlined</button><button type="button" data-level="2">In depth</button></span></div>`;
+}
+function howHTML(p) {
+  if (!p.how) return "";
+  return `<div class="tool how lvl-detail"><h4>How he does it</h4>
+    ${p.how.map(([t, items]) => `<div class="howblk"><h5>${t}</h5><ul>${items.map(i => `<li>${i}</li>`).join("")}</ul></div>`).join("")}
+    ${p.tools ? `<div class="howtools"><span class="depth-lbl">Tools he names</span>${p.tools.map(t => `<span class="chip">${t}</span>`).join("")}</div>` : ""}
+  </div>`;
+}
+function exitHTML(p, pre) {
+  return `<div class="exit"><h4>${p.gate ? "Cross the checkpoint when" : "Move on when"}</h4><ul>${p.exit.map((e, i) => {
+    const k = p.id + ":" + i;
+    return `<li><label><input type="checkbox" id="${pre}-chk-${p.id}-${i}" data-chk="${k}" ${S.checks[k] ? "checked" : ""}><span>${e}</span></label></li>`;
+  }).join("")}</ul></div>`;
+}
+function bodyHTML(p, pre) {
+  return `<div class="pb" style="--c:${colorOf(p)}">
+    <p class="one">${p.one}</p>
+    <p class="why">${p.why}</p>
+    ${p.flow ? `<ol class="flow" aria-label="Steps">${p.flow.map((f, i) => `<li><span class="fn">${i + 1}</span>${f}</li>`).join("")}</ol>` : ""}
+    ${p.stage === "mix" ? depthHTML() : ""}
+    ${listsHTML(p)}
+    ${howHTML(p)}
+    ${toolHTML(p, pre)}
+    ${exitHTML(p, pre)}
+  </div>`;
+}
+
+/* ---------- overview ---------- */
+function renderStages() {
+  document.getElementById("stages").innerHTML = STAGES.map((st, si) => `
+    <section class="stage" id="${st.id}" style="--c:${st.color}">
+      <div class="stagehead"><span class="eyebrow">Stage ${si + 1} of 3</span><h2>${st.name}</h2><div class="intro">${st.intro}</div></div>
+      ${PHASES.filter(p => p.stage === st.id).map(p => `
+        <article class="card${p.gate ? " gate" : ""}" id="${p.id}">
+          <header>
+            <div class="t"><span class="tag">${p.tag}</span><h3>${p.title}</h3></div>
+            <div class="acts">
+              <button type="button" class="btn ghost" data-open="${p.id}">Focus</button>
+              <button type="button" class="btn" data-done="${p.id}">Mark done</button>
+            </div>
+          </header>
+          ${bodyHTML(p, "o")}
+        </article>`).join("")}
+    </section>`).join("");
+}
+function renderBoard() {
+  document.getElementById("cols").innerHTML = STAGES.map(st => `
+    <div class="col" style="--c:${st.color}">
+      <div class="bar">${st.name.toUpperCase()}</div>
+      ${PHASES.filter(p => p.stage === st.id).map(p => `
+        <button type="button" class="node${p.gate ? " gate" : ""}${S.done[p.id] ? " done" : ""}${S.current === p.id ? " current" : ""}" data-open="${p.id}" title="Open ${p.title} in focus mode">
+          <span class="box">${S.done[p.id] ? "✓" : p.n}</span><span>${p.title}</span>
+        </button>`).join("")}
+    </div>`).join("");
+  document.getElementById("progressTxt").textContent = `${PHASES.filter(p => S.done[p.id]).length} of ${PHASES.length} done`;
+  document.getElementById("strip").innerHTML = stripSVG();
+}
+function stripSVG() {
+  const x0 = 16, x1 = 584, w = (x1 - x0) / 3, y = 28, h = 16;
+  let s = `<svg viewBox="0 0 600 76" role="img" aria-label="Progress from idea to finished track">
+    <text x="${x0}" y="12" class="m" style="font-size:10px;fill:var(--muted);letter-spacing:.08em">IDEA</text>
+    <text x="${x1}" y="12" text-anchor="end" class="m" style="font-size:10px;fill:var(--muted);letter-spacing:.08em">FINISHED TRACK</text>`;
+  STAGES.forEach((st, i) => {
+    const sx = x0 + i * w, ph = PHASES.filter(p => p.stage === st.id);
+    [0, 1].forEach(j => {
+      const p = ph[j], px = sx + j * w / 2;
+      s += `<rect x="${px}" y="${y}" width="${w / 2}" height="${h}" fill="${S.done[p.id] ? `url(#h-${st.id})` : "none"}" style="stroke:${st.color};stroke-width:1.5"/>
+        <text x="${px + w / 4}" y="${y + h + 16}" text-anchor="middle" class="m" style="font-size:10px;fill:var(--muted)">P${j + 1}</text>`;
+    });
+    s += `<text x="${sx + w / 2}" y="${y - 6}" text-anchor="middle" style="font-family:var(--font-hand);font-weight:600;font-size:12px;letter-spacing:.12em;fill:${st.color}">${st.name.toUpperCase()}</text>`;
+    const g = ph[2], gx = sx + w, on = S.done[g.id];
+    s += `<line x1="${gx}" y1="${y}" x2="${gx}" y2="${y + h + 6}" style="stroke:var(--check);stroke-width:2"/>
+      <circle cx="${gx}" cy="${y + h + 14}" r="8" style="fill:${on ? "var(--check)" : "var(--board)"};stroke:var(--check);stroke-width:2"/>
+      <text x="${gx}" y="${y + h + 18}" text-anchor="middle" style="font-size:10px;font-weight:700;fill:${on ? "var(--board)" : "var(--check)"}">✓</text>`;
+  });
+  return s + `</svg>`;
+}
+
+/* ---------- focus mode ---------- */
+const focusEl = document.getElementById("focus");
+function slideIndexOf(id) { return SLIDES.findIndex(s => s.kind === "phase" && s.p.id === id); }
+function renderFocus(dir) {
+  const i = Math.max(0, Math.min(SLIDES.length - 1, S.slide)), sl = SLIDES[i];
+  // nav
+  document.getElementById("fnav").innerHTML = STAGES.map(st => {
+    const stageIdx = SLIDES.findIndex(s => s.kind === "stage" && s.st.id === st.id);
+    return `<div class="fgroup" style="--c:${st.color}">
+      <button type="button" class="fstage" data-slide="${stageIdx}" ${i === stageIdx ? 'aria-current="step"' : ""}>${st.name.toUpperCase()}</button>
+      ${PHASES.filter(p => p.stage === st.id).map(p => {
+        const si = slideIndexOf(p.id), num = PHASES.indexOf(p) + 1;
+        return `<button type="button" class="pill${p.gate ? " gate" : ""}${S.done[p.id] ? " done" : ""}" data-slide="${si}" ${i === si ? 'aria-current="step"' : ""} title="${num} · ${p.title}${S.done[p.id] ? " (done)" : ""}" aria-label="${p.title}">${S.done[p.id] ? "✓" : p.n}</button>`;
+      }).join("")}
+    </div>`;
+  }).join("");
+  // slide
+  const el = document.getElementById("fslide"), main = document.getElementById("fmain");
+  if (sl.kind === "stage") {
+    const ph = PHASES.filter(p => p.stage === sl.st.id);
+    el.className = "fslide stage-slide";
+    el.style.setProperty("--c", sl.st.color);
+    el.innerHTML = `<div class="fhead"><span class="tag" style="--c:${sl.st.color}">Stage ${STAGES.indexOf(sl.st) + 1} of 3</span><h2>${sl.st.name}</h2></div>
+      <div class="intro">${sl.st.intro}</div>
+      <ul class="phaselist">${ph.map(p => `<li><button type="button" data-slide="${slideIndexOf(p.id)}" style="--c:${colorOf(p)}">
+        <span class="pill${p.gate ? " gate" : ""}${S.done[p.id] ? " done" : ""}">${S.done[p.id] ? "✓" : p.n}</span>
+        <span><b>${p.title}</b><small>${p.one}</small></span></button></li>`).join("")}</ul>`;
+    main.classList.remove("gate");
+  } else {
+    const p = sl.p;
+    el.className = "fslide" + (p.gate ? " gate" : "");
+    el.style.setProperty("--c", colorOf(p));
+    el.innerHTML = `<div class="fhead"><span class="tag${p.gate ? " g" : ""}" style="--c:${colorOf(p)}">${p.tag}</span><h2>${p.title}</h2></div>${bodyHTML(p, "f")}`;
+    main.classList.toggle("gate", !!p.gate);
+    if (S.current !== p.id) { S.current = p.id; save(); refreshOverview(); }
+  }
+  if (dir) { el.style.animation = "none"; void el.offsetWidth; el.style.animation = ""; el.classList.add(dir > 0 ? "enter-next" : "enter-prev"); }
+  main.scrollTop = 0;
+  wireDynamic(el);
+  renderBottom();
+}
+function renderBottom() {
+  const i = S.slide, sl = SLIDES[i], prev = SLIDES[i - 1], next = SLIDES[i + 1];
+  const name = s => s ? (s.kind === "stage" ? s.st.name : s.p.title) : "";
+  const pb = document.getElementById("fprev"), nb = document.getElementById("fnext");
+  pb.disabled = !prev; pb.querySelector(".lbl").textContent = prev ? name(prev) : "";
+  nb.querySelector(".lbl").textContent = next ? name(next) : "Overview";
+  const mid = document.getElementById("fmid");
+  if (sl.kind === "phase") {
+    const p = sl.p, n = p.exit.filter((_, k) => S.checks[p.id + ":" + k]).length;
+    mid.innerHTML = `<span class="hide-sm">${n}/${p.exit.length} ready</span>
+      <button type="button" class="btn" data-done="${p.id}" aria-pressed="${S.done[p.id] ? "true" : "false"}">${S.done[p.id] ? "Done ✓" : "Mark done"} <kbd>D</kbd></button>`;
+  } else mid.innerHTML = `<span>${PHASES.filter(p => p.stage === sl.st.id && S.done[p.id]).length}/3 done in ${sl.st.name}</span>`;
+}
+function go(to, dir) {
+  if (to < 0) return;
+  if (to >= SLIDES.length) { exitFocus(); return; }
+  S.slide = to; save(); renderFocus(dir ?? (to > S.slide ? 1 : -1));
+}
+function enterFocus(id) {
+  S.focus = true;
+  const target = id || S.current;
+  const si = slideIndexOf(target);
+  if (id || !(S.slide >= 0 && S.slide < SLIDES.length)) S.slide = si;
+  else if (SLIDES[S.slide].kind === "phase" && SLIDES[S.slide].p.id !== S.current) S.slide = si;
+  save();
+  focusEl.hidden = false; document.body.classList.add("focusing");
+  renderFocus(0);
+  document.getElementById("fmain").focus?.();
+}
+function exitFocus() {
+  S.focus = false; save();
+  focusEl.hidden = true; document.body.classList.remove("focusing");
+  renderStages(); wireDynamic(document.getElementById("stages")); refreshOverview();
+  const el = document.getElementById(S.current); if (el) el.scrollIntoView({ block: "start" });
+}
+
+/* ---------- dynamic parts: notes, timer ---------- */
+function renderNotes(box) {
+  const id = box.dataset.notes, list = S.notes[id] || [], ol = box.querySelector("ol");
+  ol.innerHTML = list.length ? list.map((n, i) => `
+    <li class="${n.done ? "ticked" : ""}">
+      <input type="checkbox" data-ntick="${i}" ${n.done ? "checked" : ""} aria-label="Tick off">
+      <span class="k ${n.k}">${n.k === "maybe" ? "?" : n.k}</span>
+      <span class="nt">${n.t ? `<code>${esc(n.t)}</code>` : ""}${esc(n.x)}</span>
+      <span class="ctl"><button type="button" data-nup="${i}" aria-label="Move up">↑</button><button type="button" data-ndown="${i}" aria-label="Move down">↓</button><button type="button" data-ndel="${i}" aria-label="Delete">×</button></span>
+    </li>`).join("") : `<li class="empty">No notes yet. Add them as you listen, without stopping playback.</li>`;
+}
+const T = { left: S.timerMin * 60, tick: null, endAt: 0 };
+const fmt = s => `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
+function timerDraw() {
+  document.querySelectorAll("[data-clock]").forEach(c => { c.textContent = fmt(Math.max(0, T.left)); c.closest(".timer").classList.toggle("over", T.left <= 0); });
+  document.querySelectorAll("[data-tgo]").forEach(b => { b.innerHTML = `${T.tick ? "Pause" : T.left > 0 ? "Start" : "Done"} <kbd>T</kbd>`; });
+}
+function timerToggle() {
+  if (T.tick) { clearInterval(T.tick); T.tick = null; timerDraw(); return; }
+  if (T.left <= 0) T.left = S.timerMin * 60;
+  T.endAt = Date.now() + T.left * 1000;
+  T.tick = setInterval(() => {
+    T.left = Math.round((T.endAt - Date.now()) / 1000);
+    if (T.left <= 0) { clearInterval(T.tick); T.tick = null; document.title = "Time's up · The CAM System"; }
+    timerDraw();
+  }, 250);
+  timerDraw();
+}
+function timerReset() { clearInterval(T.tick); T.tick = null; T.left = S.timerMin * 60; document.title = "The CAM System"; timerDraw(); }
+function wireDynamic(root) { root.querySelectorAll("[data-notes]").forEach(renderNotes); timerDraw(); }
+function rerenderNotes(id) { document.querySelectorAll(`[data-notes="${id}"]`).forEach(renderNotes); }
+
+/* ---------- refresh ---------- */
+function refreshOverview() {
+  renderBoard();
+  PHASES.forEach(p => {
+    const el = document.getElementById(p.id); if (!el) return;
+    el.classList.toggle("is-current", S.current === p.id);
+    const b = el.querySelector("[data-done]");
+    b.textContent = S.done[p.id] ? "Done ✓" : "Mark done";
+    b.setAttribute("aria-pressed", S.done[p.id] ? "true" : "false");
+  });
+  const p = P(S.current) || PHASES[0], all = PHASES.every(x => S.done[x.id]);
+  document.getElementById("nowDot").style.setProperty("--c", colorOf(p));
+  document.getElementById("nowWhere").textContent = all ? "Finished" : `${S.track ? S.track + " · " : ""}${p.tag} · ${p.title}`;
+  document.getElementById("nowMind").textContent = all ? "Track finished. Send it to mastering." : p.one;
+  document.getElementById("nowDone").hidden = all;
+  document.documentElement.dataset.mix = S.level;
+  document.querySelectorAll("[data-level]").forEach(b => b.setAttribute("aria-pressed", String(S.level) === b.dataset.level ? "true" : "false"));
+}
+function nextUndone(id) {
+  const i = PHASES.findIndex(p => p.id === id);
+  return PHASES.slice(i + 1).find(p => !S.done[p.id]) || PHASES.find(p => !S.done[p.id]);
+}
+function markDone(id, advance) {
+  S.done[id] = !S.done[id];
+  if (S.done[id] && advance && S.current === id) { const n = nextUndone(id); if (n) S.current = n.id; }
+  save(); refreshOverview();
+  if (S.focus) { renderFocus(0); }
+}
+
+/* ---------- events ---------- */
+const sheet = document.getElementById("sheet");
+let lastFocus = null;
+function openSheet() { lastFocus = document.activeElement; sheet.hidden = false; sheet.querySelector("[data-act='closekeys']").focus(); }
+function closeSheet() { sheet.hidden = true; lastFocus?.focus?.(); }
+
+document.addEventListener("click", e => {
+  const t = e.target.closest("[data-act],[data-open],[data-done],[data-slide],[data-level],[data-tgo],[data-treset],[data-nup],[data-ndown],[data-ndel]");
+  if (!t) { if (e.target === sheet) closeSheet(); return; }
+  const a = t.dataset;
+  if (a.act === "focus") enterFocus();
+  else if (a.act === "exit") exitFocus();
+  else if (a.act === "keys") openSheet();
+  else if (a.act === "closekeys") closeSheet();
+  else if (a.open) { S.current = a.open; enterFocus(a.open); }
+  else if (a.done) markDone(a.done, false);
+  else if (a.slide !== undefined) go(+a.slide, +a.slide > S.slide ? 1 : -1);
+  else if (a.level) { S.level = +a.level; save(); refreshOverview(); }
+  else if (a.tgo !== undefined) timerToggle();
+  else if (a.treset !== undefined) timerReset();
+  else {
+    const box = t.closest("[data-notes]"); if (!box) return;
+    const id = box.dataset.notes, L = S.notes[id] || [], i = +(a.nup ?? a.ndown ?? a.ndel);
+    if (a.nup !== undefined && i > 0) [L[i - 1], L[i]] = [L[i], L[i - 1]];
+    else if (a.ndown !== undefined && i < L.length - 1) [L[i + 1], L[i]] = [L[i], L[i + 1]];
+    else if (a.ndel !== undefined) L.splice(i, 1);
+    save(); rerenderNotes(id);
+  }
+});
+document.addEventListener("submit", e => {
+  const f = e.target.closest("[data-nform]"); if (!f) return;
+  e.preventDefault();
+  const id = f.dataset.nform, ts = f.querySelector(".ts"), tx = f.querySelector(".tx"), tk = f.querySelector("select");
+  if (!tx.value.trim()) { tx.focus(); return; }
+  (S.notes[id] = S.notes[id] || []).push({ t: ts.value.trim(), x: tx.value.trim(), k: tk.value, done: false });
+  tx.value = ""; ts.value = ""; ts.focus(); save(); rerenderNotes(id);
+});
+document.addEventListener("change", e => {
+  const t = e.target;
+  if (t.dataset.chk) {
+    S.checks[t.dataset.chk] = t.checked; save();
+    document.querySelectorAll(`[data-chk="${t.dataset.chk}"]`).forEach(x => { x.checked = t.checked; });
+    if (S.focus) renderBottom();
+  } else if (t.dataset.ntick !== undefined) {
+    const id = t.closest("[data-notes]").dataset.notes;
+    S.notes[id][+t.dataset.ntick].done = t.checked; save(); rerenderNotes(id);
+  } else if (t.dataset.tmin !== undefined) {
+    S.timerMin = Math.min(240, Math.max(1, +t.value || 25)); save();
+    document.querySelectorAll("[data-tmin]").forEach(x => { x.value = S.timerMin; });
+    if (!T.tick) { T.left = S.timerMin * 60; timerDraw(); }
+  }
+});
+document.getElementById("fprev").addEventListener("click", () => go(S.slide - 1, -1));
+document.getElementById("fnext").addEventListener("click", () => go(S.slide + 1, 1));
+document.getElementById("nowDone").addEventListener("click", () => markDone(S.current, true));
+
+document.addEventListener("keydown", e => {
+  if (e.metaKey || e.ctrlKey || e.altKey) return;
+  const typing = e.target.closest && e.target.closest("input, textarea, select");
+  if (typing) { if (e.key === "Escape") e.target.blur(); return; }
+  const k = e.key;
+  if (!sheet.hidden) { if (k === "Escape" || k === "?") { e.preventDefault(); closeSheet(); } return; }
+  if (k === "?") { e.preventDefault(); openSheet(); return; }
+  if (k === "f" || k === "F") { e.preventDefault(); S.focus ? exitFocus() : enterFocus(); return; }
+  if (k === "t" || k === "T") { if (document.querySelector("[data-tgo]")) { e.preventDefault(); timerToggle(); } return; }
+  if (/^[1-9]$/.test(k)) { e.preventDefault(); const p = PHASES[+k - 1]; if (S.focus) go(slideIndexOf(p.id), slideIndexOf(p.id) > S.slide ? 1 : -1); else enterFocus(p.id); return; }
+  if (!S.focus) return;
+  if (k === "Escape") { e.preventDefault(); exitFocus(); }
+  else if (k === "ArrowRight") { e.preventDefault(); go(S.slide + 1, 1); }
+  else if (k === "ArrowLeft") { e.preventDefault(); go(S.slide - 1, -1); }
+  else if (k === "d" || k === "D") { const sl = SLIDES[S.slide]; if (sl.kind === "phase") { e.preventDefault(); markDone(sl.p.id, false); } }
+});
+
+/* ---------- track + reset ---------- */
+const track = document.getElementById("track");
+track.value = S.track;
+track.addEventListener("input", () => { S.track = track.value; save(); refreshOverview(); });
+const resetArea = document.getElementById("resetArea");
+function showReset() {
+  resetArea.innerHTML = `<button class="btn ghost" id="reset" type="button">Start a new track</button>`;
+  document.getElementById("reset").addEventListener("click", () => {
+    resetArea.innerHTML = `<span class="confirm">Clear progress and notes? <button class="btn" id="rsYes" type="button">Clear</button><button class="btn ghost" id="rsNo" type="button">Keep</button></span>`;
+    document.getElementById("rsYes").addEventListener("click", () => {
+      const keep = S.timerMin; S = blank(); S.timerMin = keep; save();
+      track.value = ""; timerReset(); renderStages(); wireDynamic(document.getElementById("stages")); refreshOverview(); showReset();
+    });
+    document.getElementById("rsNo").addEventListener("click", showReset);
+  });
+}
+
+/* ---------- theme ---------- */
+const THEME_KEY = "cam-system-theme";
+function applyTheme(mode) {
+  if (mode === "light" || mode === "dark") document.documentElement.setAttribute("data-theme", mode);
+  else document.documentElement.removeAttribute("data-theme");
+  document.querySelectorAll("[data-theme-set]").forEach(b => b.setAttribute("aria-pressed", b.dataset.themeSet === mode ? "true" : "false"));
+}
+let themeMode = "auto";
+try { themeMode = localStorage.getItem(THEME_KEY) || "auto"; } catch (e) {}
+applyTheme(themeMode);
+document.querySelectorAll("[data-theme-set]").forEach(b => b.addEventListener("click", () => {
+  themeMode = b.dataset.themeSet; applyTheme(themeMode);
+  try { localStorage.setItem(THEME_KEY, themeMode); } catch (e) {}
+}));
+
+/* ---------- boot ---------- */
+renderStages(); wireDynamic(document.getElementById("stages")); showReset(); refreshOverview();
+if (S.focus) enterFocus();
+</script>
+
+</body>
+</html>
