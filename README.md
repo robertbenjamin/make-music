@@ -1,6 +1,6 @@
 # The CAM System: a follow-along guide
 
-**Live:** https://make-music.robertbenjamin.co
+**Live:** https://cam.robertbenjamin.co
 
 An unofficial, fan-made study guide to **Luca Bade**'s video
 [*Finish music whenever you want (with this system)*](https://www.youtube.com/watch?v=pOvyNUoNOng).
