@@ -367,6 +367,56 @@ footer.end { margin-top: 72px; }
 .howtools .depth-lbl { margin-right: 4px; }
 .chip { font-size: var(--step--1); padding: 3px 10px; border-radius: 99px; border: 1px solid var(--line); background: var(--surface); }
 .gate .how .chip { background: var(--sunk); }
+
+/* ---------- phones & touch ---------- */
+.focus { grid-template-columns: minmax(0, 1fr); }
+.focus > * { min-width: 0; }
+.arr { display: none; }
+@media (hover: none) and (pointer: coarse) {
+  kbd, .keys-only { display: none !important; }
+  .arr { display: inline; font-size: 1.1em; line-height: 1; }
+  .btn { min-height: 40px; }
+  .theme button, .seg button { min-height: 34px; }
+  input, select { font-size: max(16px, 1em) !important; }
+  .exit input, .notes input[type="checkbox"] { width: 20px; height: 20px; margin-top: 2px; }
+  .notes .ctl button { min-width: 36px; min-height: 36px; }
+}
+@media (max-width: 720px) {
+  header.top { padding-block: 24px 20px; }
+  .lede { font-size: var(--step-0); }
+  .controls { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .controls input { width: 100%; grid-column: 1 / -1; }
+  .controls .btn { justify-content: center; }
+  .now { padding-block: 8px; }
+  .now .wrap { flex-wrap: nowrap; gap: 10px; }
+  .now .txt { flex: 1 1 auto; }
+  .now .mind { font-size: .92rem; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .now .acts .btn:not(.primary) { display: none; }
+  .now .acts .btn { white-space: nowrap; }
+  .board { padding: 18px 12px 12px; }
+  .stage { margin-top: 56px; }
+  .card { padding: 16px; gap: 16px; }
+  .card h3 { font-size: 1.4rem; }
+  .lists ul, .lists ol { padding-left: 30px; }
+  .tool { padding: 12px; }
+  .fbar { gap: 8px; padding-block: 8px; }
+  .fbar.top .btn { padding-inline: 10px; }
+  .fnav { gap: 8px; justify-content: safe center; scrollbar-width: none; }
+  .fnav::-webkit-scrollbar { display: none; }
+  .fgroup { gap: 4px; }
+  .pill { width: 28px; height: 28px; font-size: .75rem; }
+  .fslide { padding-top: 22px; padding-bottom: 40px; gap: 18px; }
+  .fslide h2 { font-size: 2rem; }
+  .fbar.bottom { gap: 6px; }
+  .fbar .side { flex: 1 1 0; }
+  .fbar .side:last-child { justify-content: flex-end; }
+  .fbar .navbtn { max-width: 100%; }
+  .fbar .mid { flex: none; }
+  .now .where { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .viz svg, .strip svg { min-width: 0; }
+  .viz { padding: 10px; }
+  .roles { grid-template-columns: repeat(2, minmax(0, 1fr)); min-width: 0; gap: 12px; }
+}
 </style>
 </head>
 <body>
@@ -411,7 +461,7 @@ footer.end { margin-top: 72px; }
     <div class="controls">
       <input id="track" type="text" placeholder="Track you're finishing" aria-label="Track you're finishing" autocomplete="off">
       <button class="btn primary" type="button" data-act="focus">Open focus mode <kbd>F</kbd></button>
-      <button class="btn ghost" type="button" data-act="keys">Shortcuts <kbd>?</kbd></button>
+      <button class="btn ghost keys-only" type="button" data-act="keys">Shortcuts <kbd>?</kbd></button>
       <span id="resetArea"></span>
     </div>
   </header>
@@ -452,13 +502,13 @@ footer.end { margin-top: 72px; }
   <div class="fbar top">
     <button class="btn ghost" type="button" data-act="exit" title="Back to overview">✕<span class="hide-sm">Overview</span> <kbd>Esc</kbd></button>
     <nav class="fnav" id="fnav" aria-label="Stages and phases"></nav>
-    <button class="btn ghost" type="button" data-act="keys" title="Keyboard shortcuts"><kbd>?</kbd></button>
+    <button class="btn ghost keys-only" type="button" data-act="keys" title="Keyboard shortcuts"><kbd>?</kbd></button>
   </div>
   <div class="fmain" id="fmain" tabindex="-1"><div class="fslide" id="fslide"></div></div>
   <div class="fbar bottom">
-    <div class="side"><button class="btn navbtn" type="button" id="fprev"><kbd>←</kbd><span class="lbl"></span></button></div>
+    <div class="side"><button class="btn navbtn" type="button" id="fprev"><span class="arr" aria-hidden="true">←</span><kbd>←</kbd><span class="lbl"></span></button></div>
     <div class="mid" id="fmid"></div>
-    <div class="side"><button class="btn navbtn primary" type="button" id="fnext"><span class="lbl"></span><kbd>→</kbd></button></div>
+    <div class="side"><button class="btn navbtn primary" type="button" id="fnext"><span class="lbl"></span><kbd>→</kbd><span class="arr" aria-hidden="true">→</span></button></div>
   </div>
 </div>
 
@@ -844,6 +894,7 @@ function renderFocus(dir) {
   }
   if (dir) { el.style.animation = "none"; void el.offsetWidth; el.style.animation = ""; el.classList.add(dir > 0 ? "enter-next" : "enter-prev"); }
   main.scrollTop = 0;
+  const cur = document.querySelector("#fnav [aria-current]"); if (cur) cur.scrollIntoView({ block: "nearest", inline: "center" });
   wireDynamic(el);
   renderBottom();
 }
@@ -863,7 +914,8 @@ function renderBottom() {
 function go(to, dir) {
   if (to < 0) return;
   if (to >= SLIDES.length) { exitFocus(); return; }
-  S.slide = to; save(); renderFocus(dir ?? (to > S.slide ? 1 : -1));
+  const d = dir ?? (to > S.slide ? 1 : -1);
+  S.slide = to; save(); renderFocus(d);
 }
 function enterFocus(id) {
   S.focus = true;
@@ -1052,6 +1104,20 @@ document.querySelectorAll("[data-theme-set]").forEach(b => b.addEventListener("c
 /* ---------- boot ---------- */
 renderStages(); wireDynamic(document.getElementById("stages")); showReset(); refreshOverview();
 if (S.focus) enterFocus();
+
+// swipe between slides in focus mode (ignores sideways-scrolling diagrams and form fields)
+(() => {
+  const m = document.getElementById("fmain"); let x0 = null, y0 = 0, t0 = 0;
+  m.addEventListener("touchstart", e => {
+    if (e.touches.length !== 1 || e.target.closest(".viz, .strip, .scroll-x, input, textarea, select")) { x0 = null; return; }
+    x0 = e.touches[0].clientX; y0 = e.touches[0].clientY; t0 = Date.now();
+  }, { passive: true });
+  m.addEventListener("touchend", e => {
+    if (x0 === null) return;
+    const dx = e.changedTouches[0].clientX - x0, dy = e.changedTouches[0].clientY - y0; x0 = null;
+    if (Date.now() - t0 < 600 && Math.abs(dx) > 60 && Math.abs(dx) > 1.8 * Math.abs(dy)) go(S.slide + (dx < 0 ? 1 : -1), dx < 0 ? 1 : -1);
+  }, { passive: true });
+})();
 </script>
 
 </body>
